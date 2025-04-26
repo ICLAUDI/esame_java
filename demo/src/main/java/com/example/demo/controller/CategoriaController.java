@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Categoria;
 import com.example.demo.service.CategoriaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,54 +12,41 @@ import java.util.Optional;
 @RequestMapping("/api/categorie")
 public class CategoriaController {
 
-    private final CategoriaService categoriaService;
-
-    public CategoriaController(CategoriaService categoriaService) {
-        this.categoriaService = categoriaService;
-    }
-
-    @PostMapping
-    public Categoria createCategoria(@RequestBody Categoria categoria) {
-        return categoriaService.saveCategoria(categoria);
-    }
-
-    @GetMapping("/{id}")
-    public Categoria getCategoriaById(@PathVariable Long id) {
-        return categoriaService.getCategoriaById(id);
-    }
-
-    @GetMapping("/nome/{nome}")
-    public Optional<Categoria> getCategoriaByNome(@PathVariable String nome) {
-        return categoriaService.getCategoriaByNome(nome);
-    }
+    @Autowired
+    private CategoriaService categoriaService;
 
     @GetMapping
-    public List<Categoria> getAllCategorie() {
+    public List<Categoria> getAll() {
         return categoriaService.getAllCategorie();
     }
 
-    @GetMapping("/con-corsi")
-    public List<Categoria> getCategorieWithCorsi() {
-        return categoriaService.getCategorieWithCorsi();
+    @GetMapping("/{id}")
+    public Optional<Categoria> getById(@PathVariable Long id) {
+        return categoriaService.getCategoriaById(id);
     }
 
-    @GetMapping("/statistiche")
-    public List<Object[]> getStatisticheCorsiPerCategoria() {
-        return categoriaService.getStatisticheCorsiPerCategoria();
+    @PostMapping
+    public Categoria create(@RequestBody Categoria categoria) {
+        return categoriaService.createCategoria(categoria);
     }
 
-    @GetMapping("/search")
-    public List<Categoria> searchCategorieByKeyword(@RequestParam String keyword) {
-        return categoriaService.searchCategorieByKeyword(keyword);
+    @PutMapping("/{id}")
+    public Categoria update(@PathVariable Long id, @RequestBody Categoria categoria) {
+        return categoriaService.updateCategoria(id, categoria);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCategoria(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) {
         categoriaService.deleteCategoria(id);
     }
 
-    @GetMapping("/{id}/exists")
-    public boolean existsById(@PathVariable Long id) {
-        return categoriaService.existsById(id);
+    @GetMapping("/search/nome")
+    public List<Categoria> searchByNome(@RequestParam String nome) {
+        return categoriaService.searchByNome(nome);
+    }
+
+    @GetMapping("/search/area")
+    public List<Categoria> searchByAreaTematica(@RequestParam String areaTematica) {
+        return categoriaService.searchByAreaTematica(areaTematica);
     }
 }

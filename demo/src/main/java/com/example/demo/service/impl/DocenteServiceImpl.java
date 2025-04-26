@@ -3,35 +3,17 @@ package com.example.demo.service.impl;
 import com.example.demo.model.Docente;
 import com.example.demo.repository.DocenteRepository;
 import com.example.demo.service.DocenteService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DocenteServiceImpl implements DocenteService {
 
-    private final DocenteRepository docenteRepository;
-
-    public DocenteServiceImpl(DocenteRepository docenteRepository) {
-        this.docenteRepository = docenteRepository;
-    }
-
-    @Override
-    public Docente saveDocente(Docente docente) {
-        return docenteRepository.save(docente);
-    }
-
-    @Override
-    public Docente getDocenteById(Long id) {
-        return docenteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Docente non trovato con id: " + id));
-    }
-
-    @Override
-    public Docente getDocenteByEmail(String email) {
-        return docenteRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Docente non trovato con email: " + email));
-    }
+    @Autowired
+    private DocenteRepository docenteRepository;
 
     @Override
     public List<Docente> getAllDocenti() {
@@ -39,30 +21,43 @@ public class DocenteServiceImpl implements DocenteService {
     }
 
     @Override
-    public List<Docente> getDocentiBySpecializzazione(String specializzazione) {
-        return docenteRepository.findBySpecializzazione(specializzazione);
+    public Optional<Docente> getDocenteById(Long id) {
+        return docenteRepository.findById(id);
     }
 
     @Override
-    public List<Docente> getDocentiWithMostCorsi() {
-        return docenteRepository.findDocentiWithMostCorsi();
+    public Docente createDocente(Docente docente) {
+        return docenteRepository.save(docente);
     }
 
     @Override
-    public List<Docente> getDocentiOrderByNumeroCorsi() {
-        return docenteRepository.findAllOrderByNumeroCorsi();
+    public Docente updateDocente(Long id, Docente docente) {
+        docente.setIdDocente(id);
+        return docenteRepository.save(docente);
     }
 
     @Override
     public void deleteDocente(Long id) {
-        if (!docenteRepository.existsById(id)) {
-            throw new RuntimeException("Docente non trovato con id: " + id);
-        }
         docenteRepository.deleteById(id);
     }
 
     @Override
-    public boolean existsById(Long id) {
-        return docenteRepository.existsById(id);
+    public List<Docente> searchByNome(String nome) {
+        return docenteRepository.findByNomeContainingIgnoreCase(nome);
+    }
+
+    @Override
+    public List<Docente> searchByCognome(String cognome) {
+        return docenteRepository.findByCognomeContainingIgnoreCase(cognome);
+    }
+
+    @Override
+    public List<Docente> searchBySpecializzazione(String specializzazione) {
+        return docenteRepository.findBySpecializzazioneContainingIgnoreCase(specializzazione);
+    }
+
+    @Override
+    public Optional<Docente> getByEmail(String email) {
+        return docenteRepository.findByEmail(email);
     }
 }

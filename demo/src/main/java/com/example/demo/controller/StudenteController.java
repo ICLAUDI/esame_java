@@ -2,69 +2,83 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Studente;
 import com.example.demo.service.StudenteService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/studenti")
+@RequestMapping("/api/studente")
 public class StudenteController {
 
-    private final StudenteService studenteService;
+    @Autowired
+    private StudenteService studenteService;
 
-    public StudenteController(StudenteService studenteService) {
-        this.studenteService = studenteService;
-    }
-
+    // Crea un nuovo studente
     @PostMapping
-    public Studente createStudente(@RequestBody Studente studente) {
-        return studenteService.saveStudente(studente);
+    public ResponseEntity<Studente> createStudente(@RequestBody Studente studente) {
+        Studente createdStudente = studenteService.createStudente(studente);
+        return ResponseEntity.ok(createdStudente);
     }
 
-    @GetMapping("/{id}")
-    public Studente getStudenteById(@PathVariable Long id) {
-        return studenteService.getStudenteById(id);
-    }
-
-    @GetMapping("/email/{email}")
-    public Studente getStudenteByEmail(@PathVariable String email) {
-        return studenteService.getStudenteByEmail(email);
-    }
-
-    @GetMapping("/nome/{nome}/cognome/{cognome}")
-    public Studente getStudenteByNomeAndCognome(@PathVariable String nome, @PathVariable String cognome) {
-        return studenteService.getStudenteByNomeAndCognome(nome, cognome);
-    }
-
+    // Ottieni tutti gli studenti
     @GetMapping
     public List<Studente> getAllStudenti() {
         return studenteService.getAllStudenti();
     }
 
-    @GetMapping("/iscrizione/dopo/{data}")
-    public List<Studente> getStudentiByDataIscrizioneAfter(@PathVariable String data) {
-        LocalDate parsedDate = LocalDate.parse(data);
-        return studenteService.getStudentiByDataIscrizioneAfter(parsedDate);
+    // Ottieni uno studente per ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Studente> getStudenteById(@PathVariable Long id) {
+        Optional<Studente> studente = studenteService.getStudenteById(id);
+        return studente.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/email-contenente/{emailDomain}")
-    public List<Studente> getStudentiByEmailContaining(@PathVariable String emailDomain) {
-        return studenteService.getStudentiByEmailContaining(emailDomain);
+    // Ottieni studenti per nome
+    @GetMapping("/nome/{nome}")
+    public List<Studente> getStudentiByNome(@PathVariable String nome) {
+        return studenteService.getStudentiByNome(nome);
     }
 
-    @GetMapping("/piu-di-iscrizioni/{numeroMinIscr}")
-    public List<Studente> getStudentiWithMoreThanXIscrizioni(@PathVariable int numeroMinIscr) {
-        return studenteService.getStudentiWithMoreThanXIscrizioni(numeroMinIscr);
+    // Ottieni studenti per cognome
+    @GetMapping("/cognome/{cognome}")
+    public List<Studente> getStudentiByCognome(@PathVariable String cognome) {
+        return studenteService.getStudentiByCognome(cognome);
     }
 
+    // Ottieni uno studente per email
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Studente> getStudenteByEmail(@PathVariable String email) {
+        Studente studente = studenteService.getStudenteByEmail(email);
+        return studente != null ? ResponseEntity.ok(studente) : ResponseEntity.notFound().build();
+    }
+
+    // Ottieni studenti per data iscrizione
+    @GetMapping("/data-iscrizione")
+    public List<Studente> getStudentiByDataIscrizione(@RequestParam Date startDate, @RequestParam Date endDate) {
+        return studenteService.getStudentiByDataIscrizione(startDate, endDate);
+    }
+
+    // Ottieni studenti per titolo di studio
+    @GetMapping("/titolo-studio")
+    public List<Studente> getStudentiByTitoloStudio(@RequestParam String titoloStudio) {
+        return studenteService.getStudentiByTitoloStudio(titoloStudio);
+    }
+
+    // Aggiorna uno studente esistente
+    @PutMapping("/{id}")
+    public ResponseEntity<Studente> updateStudente(@PathVariable Long id, @RequestBody Studente studente) {
+        Studente updatedStudente = studenteService.updateStudente(id, studente);
+        return updatedStudente != null ? ResponseEntity.ok(updatedStudente) : ResponseEntity.notFound().build();
+    }
+
+    // Elimina uno studente
     @DeleteMapping("/{id}")
-    public void deleteStudente(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStudente(@PathVariable Long id) {
         studenteService.deleteStudente(id);
-    }
-
-    @GetMapping("/{id}/exists")
-    public boolean existsById(@PathVariable Long id) {
-        return studenteService.existsById(id);
+        return ResponseEntity.noContent().build();
     }
 }

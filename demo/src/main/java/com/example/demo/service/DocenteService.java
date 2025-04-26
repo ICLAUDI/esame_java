@@ -3,15 +3,16 @@ package com.example.demo.service;
 import com.example.demo.model.Docente;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DocenteService {
-    Docente saveDocente(Docente docente);
-    Docente getDocenteById(Long id);
-    Docente getDocenteByEmail(String email);
     List<Docente> getAllDocenti();
-    List<Docente> getDocentiBySpecializzazione(String specializzazione);
-    List<Docente> getDocentiWithMostCorsi();
-    List<Docente> getDocentiOrderByNumeroCorsi();
+    Optional<Docente> getDocenteById(Long id);
+    Docente createDocente(Docente docente);
+    Docente updateDocente(Long id, Docente docente);
     void deleteDocente(Long id);
-    boolean existsById(Long id);
+    List<Docente> searchByNome(String nome);
+    List<Docente> searchByCognome(String cognome);
+    List<Docente> searchBySpecializzazione(String specializzazione);
+    Optional<Docente> getByEmail(String email);
 }

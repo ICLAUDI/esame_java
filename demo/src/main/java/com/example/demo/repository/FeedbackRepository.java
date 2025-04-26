@@ -1,20 +1,24 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.Feedback;
-
-import org.springframework.data.domain.Pageable;
+import com.example.demo.model.Corso;
+import com.example.demo.model.Studente;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.Date;
 import java.util.List;
 
 @Repository
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
-    List<Feedback> findByPunteggioGreaterThanEqual(int punteggioMinimo);
-    List<Feedback> findByStudenteId(Long studenteId);
-    List<Feedback> findByCorsoId(Long corsoId);
-    @Query("SELECT AVG(f.punteggio) FROM Feedback f WHERE f.corso.id = :corsoId")
-    Double findAveragePunteggioByCourseId(Long corsoId);
-    @Query("SELECT f FROM Feedback f WHERE f.corso.id = :corsoId ORDER BY f.dataCreazione DESC")
-    List<Feedback> findLatestFeedbacksByCorsoId(Long corsoId, Pageable pageable);
+    List<Feedback> findByStudente(Studente studente);
+    List<Feedback> findByCorso(Corso corso);
+    List<Feedback> findByValutazioneBetween(Integer minValutazione, Integer maxValutazione);
+    List<Feedback> findByDataFeedbackBetween(Date startDate, Date endDate);
+    
+    @Query("SELECT AVG(f.valutazione) FROM Feedback f WHERE f.corso.idCorso = ?1")
+    Double avgValutazioneByCorsoId(Long corsoId);
+    
+    Feedback findByCorsoAndStudente(Corso corso, Studente studente);
 }

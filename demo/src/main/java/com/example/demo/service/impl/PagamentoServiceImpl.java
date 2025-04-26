@@ -1,63 +1,80 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.Pagamento;
+import com.example.demo.model.Studente;
 import com.example.demo.repository.PagamentoRepository;
 import com.example.demo.service.PagamentoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class PagamentoServiceImpl implements PagamentoService {
 
-    private final PagamentoRepository pagamentoRepository;
-
-    public PagamentoServiceImpl(PagamentoRepository pagamentoRepository) {
-        this.pagamentoRepository = pagamentoRepository;
-    }
+    @Autowired
+    private PagamentoRepository repository;
 
     @Override
-    public Pagamento savePagamento(Pagamento pagamento) {
-        return pagamentoRepository.save(pagamento);
+    public List<Pagamento> getAllPagamenti() {
+        return repository.findAll();
     }
 
     @Override
     public Pagamento getPagamentoById(Long id) {
-        return pagamentoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pagamento non trovato con id: " + id));
+        return repository.findById(id).orElse(null);
     }
 
     @Override
-    public List<Pagamento> getPagamentiByStudenteId(Long studenteId) {
-        return pagamentoRepository.findByStudenteId(studenteId);
+    public Pagamento createPagamento(Pagamento pagamento) {
+        return repository.save(pagamento);
     }
 
     @Override
-    public List<Pagamento> getPagamentiByStato(String statoPagamento) {
-        return pagamentoRepository.findByStatoPagamento(statoPagamento);
-    }
-
-    @Override
-    public Double calculateTotalPagamentiByStudenteId(Long studenteId) {
-        return pagamentoRepository.calculateTotalPagamentiByStudenteId(studenteId);
-    }
-
-    @Override
-    public List<Pagamento> getPagamentiInPeriodoOrderByImporto(LocalDate inizio, LocalDate fine) {
-        return pagamentoRepository.findPagamentiInPeriodoOrderByImporto(inizio, fine);
+    public Pagamento updatePagamento(Long id, Pagamento pagamento) {
+        pagamento.setIdPagamento(id);
+        return repository.save(pagamento);
     }
 
     @Override
     public void deletePagamento(Long id) {
-        if (!pagamentoRepository.existsById(id)) {
-            throw new RuntimeException("Pagamento non trovato con id: " + id);
-        }
-        pagamentoRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
     @Override
-    public boolean existsById(Long id) {
-        return pagamentoRepository.existsById(id);
+    public List<Pagamento> getPagamentiByStudente(Studente studente) {
+        return repository.findByStudente(studente);
+    }
+
+    @Override
+    public List<Pagamento> getPagamentiByDateRange(Date startDate, Date endDate) {
+        return repository.findByDataPagamentoBetween(startDate, endDate);
+    }
+
+    @Override
+    public List<Pagamento> getPagamentiByMetodoPagamento(String metodoPagamento) {
+        return repository.findByMetodoPagamento(metodoPagamento);
+    }
+
+    @Override
+    public List<Pagamento> getPagamentiByStato(String stato) {
+        return repository.findByStato(stato);
+    }
+
+    @Override
+    public List<Pagamento> getPagamentiAboveImporto(BigDecimal importoMinimo) {
+        return repository.findByImportoGreaterThanEqual(importoMinimo);
+    }
+
+    @Override
+    public BigDecimal getTotalAmountByStudente(Long studenteId) {
+        return repository.sumImportoByStudenteId(studenteId);
+    }
+
+    @Override
+    public BigDecimal getTotalAmountByDateRange(Date startDate, Date endDate) {
+        return repository.sumImportoByDateRange(startDate, endDate);
     }
 }

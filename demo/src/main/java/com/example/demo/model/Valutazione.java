@@ -1,38 +1,17 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
-@Table(name = "valutazioni")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "valutazione")
 public class Valutazione {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id_valutazione")
+    private Long idValutazione;
     
-    @DecimalMin(value = "0.0", message = "Il voto non può essere negativo")
-    @DecimalMax(value = "10.0", message = "Il voto non può essere maggiore di 10")
-    private Float voto;
-    
-    @Column(columnDefinition = "TEXT")
-    private String commento;
-    
-    @Column(name = "data_valutazione")
-    private LocalDate dataValutazione;
-    
-    @Column(name = "tipo_valutazione")
-    private String tipoValutazione;
-    
-    // Relazioni
     @ManyToOne
     @JoinColumn(name = "id_iscrizione", nullable = false)
     private Iscrizione iscrizione;
@@ -40,4 +19,87 @@ public class Valutazione {
     @ManyToOne
     @JoinColumn(name = "id_docente", nullable = false)
     private Docente docente;
+    
+    @Column(name = "voto")
+    private Integer voto;
+    
+    @Column(name = "commento")
+    private String commento;
+    
+    @Column(name = "data_valutazione")
+    @Temporal(TemporalType.DATE)
+    private Date dataValutazione;
+    
+    @Column(name = "tipo_valutazione")
+    private String tipoValutazione;
+
+    // Costruttori
+    public Valutazione() {
+    }
+
+    public Valutazione(Iscrizione iscrizione, Docente docente, Integer voto, String commento, Date dataValutazione, String tipoValutazione) {
+        this.iscrizione = iscrizione;
+        this.docente = docente;
+        this.voto = voto;
+        this.commento = commento;
+        this.dataValutazione = dataValutazione;
+        this.tipoValutazione = tipoValutazione;
+    }
+
+    // Getter e Setter
+    public Long getIdValutazione() {
+        return idValutazione;
+    }
+
+    public void setIdValutazione(Long idValutazione) {
+        this.idValutazione = idValutazione;
+    }
+
+    public Iscrizione getIscrizione() {
+        return iscrizione;
+    }
+
+    public void setIscrizione(Iscrizione iscrizione) {
+        this.iscrizione = iscrizione;
+    }
+
+    public Docente getDocente() {
+        return docente;
+    }
+
+    public void setDocente(Docente docente) {
+        this.docente = docente;
+    }
+
+    public Integer getVoto() {
+        return voto;
+    }
+
+    public void setVoto(Integer voto) {
+        this.voto = voto;
+    }
+
+    public String getCommento() {
+        return commento;
+    }
+
+    public void setCommento(String commento) {
+        this.commento = commento;
+    }
+
+    public Date getDataValutazione() {
+        return dataValutazione;
+    }
+
+    public void setDataValutazione(Date dataValutazione) {
+        this.dataValutazione = dataValutazione;
+    }
+
+    public String getTipoValutazione() {
+        return tipoValutazione;
+    }
+
+    public void setTipoValutazione(String tipoValutazione) {
+        this.tipoValutazione = tipoValutazione;
+    }
 }

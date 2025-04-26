@@ -1,38 +1,17 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Date;
 
 @Entity
-@Table(name = "iscrizioni")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "iscrizione")
 public class Iscrizione {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id_iscrizione")
+    private Long idIscrizione;
     
-    @Column(name = "data_iscrizione")
-    private LocalDate dataIscrizione;
-    
-    private String stato;
-    
-    @PositiveOrZero(message = "L'importo pagato non può essere negativo")
-    @Column(name = "importo_pagato")
-    private Float importoPagato;
-    
-    private Boolean completato;
-    
-    // Relazioni
     @ManyToOne
     @JoinColumn(name = "id_studente", nullable = false)
     private Studente studente;
@@ -41,9 +20,86 @@ public class Iscrizione {
     @JoinColumn(name = "id_corso", nullable = false)
     private Corso corso;
     
-    @OneToMany(mappedBy = "iscrizione", cascade = CascadeType.ALL)
-    private Set<Valutazione> valutazioni = new HashSet<>();
+    @Column(name = "data_iscrizione")
+    @Temporal(TemporalType.DATE)
+    private Date dataIscrizione;
     
-    @OneToMany(mappedBy = "iscrizione", cascade = CascadeType.ALL)
-    private Set<Presenza> presenze = new HashSet<>();
+    @Column(name = "stato")
+    private String stato;
+    
+    @Column(name = "importo_pagato")
+    private Double importoPagato;
+    
+    @Column(name = "completato")
+    private Boolean completato;
+
+    // Costruttori
+    public Iscrizione() {
+    }
+
+    public Iscrizione(Studente studente, Corso corso, Date dataIscrizione, String stato, Double importoPagato, Boolean completato) {
+        this.studente = studente;
+        this.corso = corso;
+        this.dataIscrizione = dataIscrizione;
+        this.stato = stato;
+        this.importoPagato = importoPagato;
+        this.completato = completato;
+    }
+
+    // Getter e Setter
+    public Long getIdIscrizione() {
+        return idIscrizione;
+    }
+
+    public void setIdIscrizione(Long idIscrizione) {
+        this.idIscrizione = idIscrizione;
+    }
+
+    public Studente getStudente() {
+        return studente;
+    }
+
+    public void setStudente(Studente studente) {
+        this.studente = studente;
+    }
+
+    public Corso getCorso() {
+        return corso;
+    }
+
+    public void setCorso(Corso corso) {
+        this.corso = corso;
+    }
+
+    public Date getDataIscrizione() {
+        return dataIscrizione;
+    }
+
+    public void setDataIscrizione(Date dataIscrizione) {
+        this.dataIscrizione = dataIscrizione;
+    }
+
+    public String getStato() {
+        return stato;
+    }
+
+    public void setStato(String stato) {
+        this.stato = stato;
+    }
+
+    public Double getImportoPagato() {
+        return importoPagato;
+    }
+
+    public void setImportoPagato(Double importoPagato) {
+        this.importoPagato = importoPagato;
+    }
+
+    public Boolean getCompletato() {
+        return completato;
+    }
+
+    public void setCompletato(Boolean completato) {
+        this.completato = completato;
+    }
 }

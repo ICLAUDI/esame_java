@@ -2,62 +2,61 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Docente;
 import com.example.demo.service.DocenteService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/docenti")
 public class DocenteController {
 
-    private final DocenteService docenteService;
-
-    public DocenteController(DocenteService docenteService) {
-        this.docenteService = docenteService;
-    }
-
-    @PostMapping
-    public Docente createDocente(@RequestBody Docente docente) {
-        return docenteService.saveDocente(docente);
-    }
-
-    @GetMapping("/{id}")
-    public Docente getDocenteById(@PathVariable Long id) {
-        return docenteService.getDocenteById(id);
-    }
+    @Autowired
+    private DocenteService docenteService;
 
     @GetMapping
-    public List<Docente> getAllDocenti() {
+    public List<Docente> getAll() {
         return docenteService.getAllDocenti();
     }
 
-    @GetMapping("/email/{email}")
-    public Docente getDocenteByEmail(@PathVariable String email) {
-        return docenteService.getDocenteByEmail(email);
+    @GetMapping("/{id}")
+    public Optional<Docente> getById(@PathVariable Long id) {
+        return docenteService.getDocenteById(id);
     }
 
-    @GetMapping("/specializzazione/{specializzazione}")
-    public List<Docente> getDocentiBySpecializzazione(@PathVariable String specializzazione) {
-        return docenteService.getDocentiBySpecializzazione(specializzazione);
+    @PostMapping
+    public Docente create(@RequestBody Docente docente) {
+        return docenteService.createDocente(docente);
     }
 
-    @GetMapping("/piu-corsi")
-    public List<Docente> getDocentiWithMostCorsi() {
-        return docenteService.getDocentiWithMostCorsi();
-    }
-
-    @GetMapping("/ordinati-corsi")
-    public List<Docente> getDocentiOrderByNumeroCorsi() {
-        return docenteService.getDocentiOrderByNumeroCorsi();
+    @PutMapping("/{id}")
+    public Docente update(@PathVariable Long id, @RequestBody Docente docente) {
+        return docenteService.updateDocente(id, docente);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteDocente(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) {
         docenteService.deleteDocente(id);
     }
 
-    @GetMapping("/{id}/exists")
-    public boolean existsById(@PathVariable Long id) {
-        return docenteService.existsById(id);
+    @GetMapping("/search/nome")
+    public List<Docente> searchByNome(@RequestParam String nome) {
+        return docenteService.searchByNome(nome);
+    }
+
+    @GetMapping("/search/cognome")
+    public List<Docente> searchByCognome(@RequestParam String cognome) {
+        return docenteService.searchByCognome(cognome);
+    }
+
+    @GetMapping("/search/specializzazione")
+    public List<Docente> searchBySpecializzazione(@RequestParam String specializzazione) {
+        return docenteService.searchBySpecializzazione(specializzazione);
+    }
+
+    @GetMapping("/search/email")
+    public Optional<Docente> getByEmail(@RequestParam String email) {
+        return docenteService.getByEmail(email);
     }
 }

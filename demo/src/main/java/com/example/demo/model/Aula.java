@@ -1,38 +1,106 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
-@Table(name = "aule")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "aula")
 public class Aula {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id_aula")
+    private Long idAula;
     
-    @NotBlank(message = "Il nome è obbligatorio")
+    @Column(name = "nome", nullable = false)
     private String nome;
     
-    @Positive(message = "La capacità deve essere maggiore di zero")
+    @Column(name = "capacità")
     private Integer capacita;
     
+    @Column(name = "edificio")
     private String edificio;
     
+    @Column(name = "attrezzature")
     private String attrezzature;
     
+    @Column(name = "accessibile")
     private Boolean accessibile;
     
-    // Relazioni
-    @OneToMany(mappedBy = "aula", cascade = CascadeType.ALL)
-    private Set<Lezione> lezioni = new HashSet<>();
+    @OneToMany(mappedBy = "aula")
+    private List<Lezione> lezioni;
+
+    // Costruttori
+    public Aula() {
+    }
+
+    public Aula(String nome, Integer capacita, String edificio, String attrezzature, Boolean accessibile) {
+        this.nome = nome;
+        this.capacita = capacita;
+        this.edificio = edificio;
+        this.attrezzature = attrezzature;
+        this.accessibile = accessibile;
+    }
+
+    // Getter e Setter
+    public Long getIdAula() {
+        return idAula;
+    }
+
+    public void setIdAula(Long idAula) {
+        this.idAula = idAula;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public Integer getCapacita() {
+        return capacita;
+    }
+
+    public void setCapacita(Integer capacita) {
+        this.capacita = capacita;
+    }
+
+    public String getEdificio() {
+        return edificio;
+    }
+
+    public void setEdificio(String edificio) {
+        this.edificio = edificio;
+    }
+
+    public String getAttrezzature() {
+        return attrezzature;
+    }
+
+    public void setAttrezzature(String attrezzature) {
+        this.attrezzature = attrezzature;
+    }
+
+    public Boolean getAccessibile() {
+        return accessibile;
+    }
+
+    public void setAccessibile(Boolean accessibile) {
+        this.accessibile = accessibile;
+    }
+
+    public List<Lezione> getLezioni() {
+        return lezioni;
+    }
+
+    public void setLezioni(List<Lezione> lezioni) {
+        this.lezioni = lezioni;
+    }
+
+    @Override
+    public String toString() {
+        return nome;
+    }
 }

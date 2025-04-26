@@ -1,61 +1,91 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Pagamento;
+import com.example.demo.model.Studente;
 import com.example.demo.service.PagamentoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/pagamenti")
 public class PagamentoController {
 
-    private final PagamentoService pagamentoService;
+    @Autowired
+    private PagamentoService service;
 
-    public PagamentoController(PagamentoService pagamentoService) {
-        this.pagamentoService = pagamentoService;
-    }
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    @PostMapping
-    public Pagamento createPagamento(@RequestBody Pagamento pagamento) {
-        return pagamentoService.savePagamento(pagamento);
+    @GetMapping
+    public List<Pagamento> getAll() {
+        return service.getAllPagamenti();
     }
 
     @GetMapping("/{id}")
-    public Pagamento getPagamentoById(@PathVariable Long id) {
-        return pagamentoService.getPagamentoById(id);
+    public Pagamento getById(@PathVariable Long id) {
+        return service.getPagamentoById(id);
     }
 
-    @GetMapping("/studente/{studenteId}")
-    public List<Pagamento> getPagamentiByStudenteId(@PathVariable Long studenteId) {
-        return pagamentoService.getPagamentiByStudenteId(studenteId);
+    @PostMapping
+    public Pagamento create(@RequestBody Pagamento pagamento) {
+        return service.createPagamento(pagamento);
     }
 
-    @GetMapping("/stato/{statoPagamento}")
-    public List<Pagamento> getPagamentiByStato(@PathVariable String statoPagamento) {
-        return pagamentoService.getPagamentiByStato(statoPagamento);
-    }
-
-    @GetMapping("/totale/{studenteId}")
-    public Double calculateTotalPagamenti(@PathVariable Long studenteId) {
-        return pagamentoService.calculateTotalPagamentiByStudenteId(studenteId);
-    }
-
-    @GetMapping("/periodo")
-    public List<Pagamento> getPagamentiInPeriodo(
-            @RequestParam LocalDate inizio, 
-            @RequestParam LocalDate fine) {
-        return pagamentoService.getPagamentiInPeriodoOrderByImporto(inizio, fine);
+    @PutMapping("/{id}")
+    public Pagamento update(@PathVariable Long id, @RequestBody Pagamento pagamento) {
+        return service.updatePagamento(id, pagamento);
     }
 
     @DeleteMapping("/{id}")
-    public void deletePagamento(@PathVariable Long id) {
-        pagamentoService.deletePagamento(id);
+    public void delete(@PathVariable Long id) {
+        service.deletePagamento(id);
     }
 
-    @GetMapping("/{id}/exists")
-    public boolean existsById(@PathVariable Long id) {
-        return pagamentoService.existsById(id);
+    @GetMapping("/studente/{studenteId}")
+    public List<Pagamento> getByStudente(@PathVariable Long studenteId) {
+        Studente studente = new Studente();  
+        studente.setIdStudente(studenteId);
+        return service.getPagamentiByStudente(studente);
+    }
+
+    @GetMapping("/date-range")
+    public List<Pagamento> getByDateRange(@RequestParam(name = "startDate") String startDate,
+                                          @RequestParam(name = "endDate") String endDate) throws ParseException {
+        Date start = sdf.parse(startDate);
+        Date end = sdf.parse(endDate);
+        return service.getPagamentiByDateRange(start, end);
+    }
+
+    @GetMapping("/metodo")
+    public List<Pagamento> getByMetodoPagamento(@RequestParam String metodo) {
+        return service.getPagamentiByMetodoPagamento(metodo);
+    }
+
+    @GetMapping("/stato")
+    public List<Pagamento> getByStato(@RequestParam String stato) {
+        return service.getPagamentiByStato(stato);
+    }
+
+    @GetMapping("/importo-minimo")
+    public List<Pagamento> getPagamentiAboveImporto(@RequestParam BigDecimal importoMinimo) {
+        return service.getPagamentiAboveImporto(importoMinimo);
+    }
+
+    @GetMapping("/total/{studenteId}")
+    public BigDecimal getTotalAmountByStudente(@PathVariable Long studenteId) {
+        return service.getTotalAmountByStudente(studenteId);
+    }
+
+    @GetMapping("/total-range")
+    public BigDecimal getTotalAmountByDateRange(@RequestParam(name = "startDate") String startDate,
+                                                @RequestParam(name = "endDate") String endDate) throws ParseException {
+        Date start = sdf.parse(startDate);
+        Date end = sdf.parse(endDate);
+        return service.getTotalAmountByDateRange(start, end);
     }
 }

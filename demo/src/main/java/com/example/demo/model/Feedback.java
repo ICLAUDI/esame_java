@@ -1,35 +1,17 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Table(name = "feedback")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Feedback {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id_feedback")
+    private Long idFeedback;
     
-    @Min(value = 1, message = "La valutazione deve essere tra 1 e 5")
-    @Max(value = 5, message = "La valutazione deve essere tra 1 e 5")
-    private Integer valutazione;
-    
-    @Column(columnDefinition = "TEXT")
-    private String commento;
-    
-    @Column(name = "data_feedback")
-    private LocalDate dataFeedback;
-    
-    // Relazioni
     @ManyToOne
     @JoinColumn(name = "id_studente", nullable = false)
     private Studente studente;
@@ -37,4 +19,75 @@ public class Feedback {
     @ManyToOne
     @JoinColumn(name = "id_corso", nullable = false)
     private Corso corso;
+    
+    @Column(name = "valutazione")
+    private Integer valutazione;
+    
+    @Column(name = "commento")
+    private String commento;
+    
+    @Column(name = "data_feedback")
+    @Temporal(TemporalType.DATE)
+    private Date dataFeedback;
+
+    // Costruttori
+    public Feedback() {
+    }
+
+    public Feedback(Studente studente, Corso corso, Integer valutazione, String commento, Date dataFeedback) {
+        this.studente = studente;
+        this.corso = corso;
+        this.valutazione = valutazione;
+        this.commento = commento;
+        this.dataFeedback = dataFeedback;
+    }
+
+    // Getter e Setter
+    public Long getIdFeedback() {
+        return idFeedback;
+    }
+
+    public void setIdFeedback(Long idFeedback) {
+        this.idFeedback = idFeedback;
+    }
+
+    public Studente getStudente() {
+        return studente;
+    }
+
+    public void setStudente(Studente studente) {
+        this.studente = studente;
+    }
+
+    public Corso getCorso() {
+        return corso;
+    }
+
+    public void setCorso(Corso corso) {
+        this.corso = corso;
+    }
+
+    public Integer getValutazione() {
+        return valutazione;
+    }
+
+    public void setValutazione(Integer valutazione) {
+        this.valutazione = valutazione;
+    }
+
+    public String getCommento() {
+        return commento;
+    }
+
+    public void setCommento(String commento) {
+        this.commento = commento;
+    }
+
+    public Date getDataFeedback() {
+        return dataFeedback;
+    }
+
+    public void setDataFeedback(Date dataFeedback) {
+        this.dataFeedback = dataFeedback;
+    }
 }

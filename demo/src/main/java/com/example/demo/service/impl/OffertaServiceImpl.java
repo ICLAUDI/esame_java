@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.model.Offerta;
 import com.example.demo.repository.OffertaRepository;
 import com.example.demo.service.OffertaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -11,53 +12,52 @@ import java.util.List;
 @Service
 public class OffertaServiceImpl implements OffertaService {
 
-    private final OffertaRepository offertaRepository;
-
-    public OffertaServiceImpl(OffertaRepository offertaRepository) {
-        this.offertaRepository = offertaRepository;
-    }
+    @Autowired
+    private OffertaRepository repository;
 
     @Override
-    public Offerta saveOfferta(Offerta offerta) {
-        return offertaRepository.save(offerta);
+    public List<Offerta> getAllOfferte() {
+        return repository.findAll();
     }
 
     @Override
     public Offerta getOffertaById(Long id) {
-        return offertaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Offerta non trovata con id: " + id));
+        return repository.findById(id).orElse(null);
     }
 
     @Override
-    public List<Offerta> getOfferteByTipo(String tipoOfferta) {
-        return offertaRepository.findByTipoOfferta(tipoOfferta);
+    public Offerta createOfferta(Offerta offerta) {
+        return repository.save(offerta);
     }
 
     @Override
-    public List<Offerta> getOfferteWithMoreThan50PercentDiscount() {
-        return offertaRepository.findOfferteWithMoreThan50PercentDiscount();
-    }
-
-    @Override
-    public List<Offerta> getActiveOfferteByCorsoId(Long corsoId) {
-        return offertaRepository.findActiveOfferteByCorsoIdOrderByPrice(corsoId);
-    }
-
-    @Override
-    public List<Offerta> getOfferteByScadenzaAfter(LocalDate today) {
-        return offertaRepository.findByScadenzaAfter(today);
+    public Offerta updateOfferta(Long id, Offerta offerta) {
+        offerta.setId_offerta(id);
+        return repository.save(offerta);
     }
 
     @Override
     public void deleteOfferta(Long id) {
-        if (!offertaRepository.existsById(id)) {
-            throw new RuntimeException("Offerta non trovata con id: " + id);
-        }
-        offertaRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
     @Override
-    public boolean existsById(Long id) {
-        return offertaRepository.existsById(id);
+    public List<Offerta> getOfferteAttive(LocalDate data) {
+        return repository.findByDataScadenzaAfter(data);
+    }
+
+    @Override
+    public List<Offerta> getOfferteByTipo(String tipoOfferta) {
+        return repository.findByTipoOfferta(tipoOfferta);
+    }
+
+    @Override
+    public List<Offerta> getOfferteConScontoMaggioreDel50() {
+        return repository.findOfferteWithMoreThan50PercentDiscount();
+    }
+
+    @Override
+    public List<Offerta> getOfferteAttivePerPartner(Long partnerId) {
+        return repository.findActiveOfferteByPartnerIdOrderByPrice(partnerId);
     }
 }

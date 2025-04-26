@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.model.Categoria;
 import com.example.demo.repository.CategoriaRepository;
 import com.example.demo.service.CategoriaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,27 +12,8 @@ import java.util.Optional;
 @Service
 public class CategoriaServiceImpl implements CategoriaService {
 
-    private final CategoriaRepository categoriaRepository;
-
-    public CategoriaServiceImpl(CategoriaRepository categoriaRepository) {
-        this.categoriaRepository = categoriaRepository;
-    }
-
-    @Override
-    public Categoria saveCategoria(Categoria categoria) {
-        return categoriaRepository.save(categoria);
-    }
-
-    @Override
-    public Categoria getCategoriaById(Long id) {
-        return categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria non trovata con id: " + id));
-    }
-
-    @Override
-    public Optional<Categoria> getCategoriaByNome(String nome) {
-        return categoriaRepository.findByNome(nome);
-    }
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
     @Override
     public List<Categoria> getAllCategorie() {
@@ -39,30 +21,33 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public List<Categoria> getCategorieWithCorsi() {
-        return categoriaRepository.findCategorieWithCorsi();
+    public Optional<Categoria> getCategoriaById(Long id) {
+        return categoriaRepository.findById(id);
     }
 
     @Override
-    public List<Object[]> getStatisticheCorsiPerCategoria() {
-        return categoriaRepository.countCorsiPerCategoria();
+    public Categoria createCategoria(Categoria categoria) {
+        return categoriaRepository.save(categoria);
     }
 
     @Override
-    public List<Categoria> searchCategorieByKeyword(String keyword) {
-        return categoriaRepository.findByDescrizioneContaining(keyword);
+    public Categoria updateCategoria(Long id, Categoria categoria) {
+        categoria.setIdCategoria(id);
+        return categoriaRepository.save(categoria);
     }
 
     @Override
     public void deleteCategoria(Long id) {
-        if (!categoriaRepository.existsById(id)) {
-            throw new RuntimeException("Impossibile eliminare, categoria non trovata con id: " + id);
-        }
         categoriaRepository.deleteById(id);
     }
 
     @Override
-    public boolean existsById(Long id) {
-        return categoriaRepository.existsById(id);
+    public List<Categoria> searchByNome(String nome) {
+        return categoriaRepository.findByNomeContainingIgnoreCase(nome);
+    }
+
+    @Override
+    public List<Categoria> searchByAreaTematica(String areaTematica) {
+        return categoriaRepository.findByAreaTematicaContainingIgnoreCase(areaTematica);
     }
 }

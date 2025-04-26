@@ -1,62 +1,90 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.Stage;
+import com.example.demo.model.Corso;
+import com.example.demo.model.Partner;
+import com.example.demo.model.Studente;
 import com.example.demo.repository.StageRepository;
 import com.example.demo.service.StageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StageServiceImpl implements StageService {
 
-    private final StageRepository stageRepository;
-
-    public StageServiceImpl(StageRepository stageRepository) {
-        this.stageRepository = stageRepository;
-    }
+    @Autowired
+    private StageRepository stageRepository;
 
     @Override
-    public Stage saveStage(Stage stage) {
+    public Stage createStage(Stage stage) {
         return stageRepository.save(stage);
     }
 
     @Override
-    public Stage getStageById(Long id) {
-        return stageRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Stage non trovato con id: " + id));
+    public List<Stage> getAllStages() {
+        return stageRepository.findAll();
     }
 
     @Override
-    public List<Stage> getStagesByStudenteId(Long studenteId) {
-        return stageRepository.findByStudenteId(studenteId);
+    public Optional<Stage> getStageById(Long id) {
+        return stageRepository.findById(id);
     }
 
     @Override
-    public List<Stage> getStagesByPartnerAziendaleId(Long partnerAziendaleId) {
-        return stageRepository.findByPartnerAziendaleId(partnerAziendaleId);
+    public List<Stage> getStagesByStudente(Studente studente) {
+        return stageRepository.findByStudente(studente);
     }
 
     @Override
-    public List<Stage> getActiveStages() {
-        return stageRepository.findActiveStage();
+    public List<Stage> getStagesByCorso(Corso corso) {
+        return stageRepository.findByCorso(corso);
     }
 
     @Override
-    public List<Stage> getCompletedStagesWithoutValutazione() {
-        return stageRepository.findCompletedStageWithoutValutazione();
+    public List<Stage> getStagesByPartner(Partner partner) {
+        return stageRepository.findByPartner(partner);
+    }
+
+    @Override
+    public List<Stage> getStagesByDateRange(Date startDate, Date endDate) {
+        return stageRepository.findByDataInizioBetween(startDate, endDate);
+    }
+
+    @Override
+    public List<Stage> getStagesByRetribuito(Boolean retribuito) {
+        return stageRepository.findByRetribuito(retribuito);
+    }
+
+    @Override
+    public List<Stage> getStagesByRuolo(String ruolo) {
+        return stageRepository.findByRuoloContainingIgnoreCase(ruolo);
+    }
+
+    @Override
+    public Stage updateStage(Long id, Stage stage) {
+        if (stageRepository.existsById(id)) {
+            stage.setIdStage(id);
+            return stageRepository.save(stage);
+        }
+        return null;
     }
 
     @Override
     public void deleteStage(Long id) {
-        if (!stageRepository.existsById(id)) {
-            throw new RuntimeException("Stage non trovato con id: " + id);
-        }
         stageRepository.deleteById(id);
     }
 
     @Override
-    public boolean existsById(Long id) {
-        return stageRepository.existsById(id);
+    public Stage getStageByCorsoAndStudente(Corso corso, Studente studente) {
+        return stageRepository.findByCorsoAndStudente(corso, studente);
+    }
+
+    @Override
+    public List<Stage> getStagesByDateRangeForActive(Date dataFine, Date dataInizio) {
+        return stageRepository.findByDataInizioLessThanEqualAndDataFineGreaterThanEqual(dataFine, dataInizio);
     }
 }

@@ -1,32 +1,22 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.Lezione;
+import com.example.demo.model.Corso;
+import com.example.demo.model.Docente;
+import com.example.demo.model.Aula;
 import com.example.demo.repository.LezioneRepository;
 import com.example.demo.service.LezioneService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class LezioneServiceImpl implements LezioneService {
 
-    private final LezioneRepository lezioneRepository;
-
-    public LezioneServiceImpl(LezioneRepository lezioneRepository) {
-        this.lezioneRepository = lezioneRepository;
-    }
-
-    @Override
-    public Lezione saveLezione(Lezione lezione) {
-        return lezioneRepository.save(lezione);
-    }
-
-    @Override
-    public Lezione getLezioneById(Long id) {
-        return lezioneRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lezione non trovata con id: " + id));
-    }
+    @Autowired
+    private LezioneRepository lezioneRepository;
 
     @Override
     public List<Lezione> getAllLezioni() {
@@ -34,35 +24,59 @@ public class LezioneServiceImpl implements LezioneService {
     }
 
     @Override
-    public List<Lezione> getLezioniByCorsoOrderByData(Long corsoId) {
-        return lezioneRepository.findByCorsoIdOrderByDataAsc(corsoId);
+    public Lezione getLezioneById(Long id) {
+        return lezioneRepository.findById(id).orElse(null);
     }
 
     @Override
-    public List<Lezione> getLezioniByPeriodo(LocalDate inizio, LocalDate fine) {
-        return lezioneRepository.findByDataBetween(inizio, fine);
+    public Lezione createLezione(Lezione lezione) {
+        return lezioneRepository.save(lezione);
     }
 
     @Override
-    public List<Lezione> getUpcomingLezioniByCorso(Long corsoId) {
-        return lezioneRepository.findUpcomingLezioniByCorsoId(corsoId);
-    }
-
-    @Override
-    public List<Object[]> getStatisticheLezioniPerCorso() {
-        return lezioneRepository.countLezioniPerCorso();
+    public Lezione updateLezione(Long id, Lezione lezione) {
+        lezione.setIdLezione(id);
+        return lezioneRepository.save(lezione);
     }
 
     @Override
     public void deleteLezione(Long id) {
-        if (!lezioneRepository.existsById(id)) {
-            throw new RuntimeException("Impossibile eliminare, lezione non trovata con id: " + id);
-        }
         lezioneRepository.deleteById(id);
     }
 
     @Override
-    public boolean existsById(Long id) {
-        return lezioneRepository.existsById(id);
+    public List<Lezione> getByCorso(Corso corso) {
+        return lezioneRepository.findByCorso(corso);
+    }
+
+    @Override
+    public List<Lezione> getByDocente(Docente docente) {
+        return lezioneRepository.findByDocente(docente);
+    }
+
+    @Override
+    public List<Lezione> getByAula(Aula aula) {
+        return lezioneRepository.findByAula(aula);
+    }
+
+    @Override
+    public List<Lezione> getByData(Date data) {
+        return lezioneRepository.findByData(data);
+    }
+
+    @Override
+    public List<Lezione> getByDataBetween(Date startDate, Date endDate) {
+        return lezioneRepository.findByDataBetween(startDate, endDate);
+    }
+
+    @Override
+    public List<Lezione> getByArgomento(String argomento) {
+        return lezioneRepository.findByArgomentoContainingIgnoreCase(argomento);
+    }
+
+    @Override
+    public List<Lezione> getByAulaAndDataAndTimeOverlap(Aula aula, Date data, String oraFine, String oraInizio) {
+        return lezioneRepository.findByAulaAndDataAndOraInizioLessThanEqualAndOraFineGreaterThanEqual(
+                aula, data, oraFine, oraInizio);
     }
 }

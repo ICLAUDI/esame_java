@@ -1,17 +1,23 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Feedback;
+import com.example.demo.model.Corso;
+import com.example.demo.model.Studente;
 
+import java.util.Date;
 import java.util.List;
 
 public interface FeedbackService {
-    Feedback saveFeedback(Feedback feedback);
+    List<Feedback> getAllFeedback();
     Feedback getFeedbackById(Long id);
-    List<Feedback> getFeedbackByCorsoId(Long corsoId);
-    List<Feedback> getFeedbackByStudenteId(Long studenteId);
-    List<Feedback> getFeedbackByPunteggioMinimo(int punteggioMinimo);
-    Double getAveragePunteggioByCorsoId(Long corsoId);
-    List<Feedback> getLatestFeedbacksByCorsoId(Long corsoId, int page, int size);
+    Feedback createFeedback(Feedback feedback);
+    Feedback updateFeedback(Long id, Feedback feedback);
     void deleteFeedback(Long id);
-    boolean existsById(Long id);
+
+    List<Feedback> getByStudente(Studente studente);
+    List<Feedback> getByCorso(Corso corso);
+    List<Feedback> getByValutazioneRange(int min, int max);
+    List<Feedback> getByDateRange(Date start, Date end);
+    Double getAverageValutazioneByCorsoId(Long corsoId);
+    Feedback getByCorsoAndStudente(Corso corso, Studente studente);
 }

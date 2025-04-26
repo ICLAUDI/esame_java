@@ -1,59 +1,57 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.MaterialeDidattico;
+import com.example.demo.model.Corso;
 import com.example.demo.service.MaterialeDidatticoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/materiali")
 public class MaterialeDidatticoController {
 
-    private final MaterialeDidatticoService materialeDidatticoService;
+    @Autowired
+    private MaterialeDidatticoService service;
 
-    public MaterialeDidatticoController(MaterialeDidatticoService materialeDidatticoService) {
-        this.materialeDidatticoService = materialeDidatticoService;
-    }
-
-    @PostMapping
-    public MaterialeDidattico createMateriale(@RequestBody MaterialeDidattico materialeDidattico) {
-        return materialeDidatticoService.saveMaterialeDidattico(materialeDidattico);
+    @GetMapping
+    public List<MaterialeDidattico> getAll() {
+        return service.getAllMateriali();
     }
 
     @GetMapping("/{id}")
-    public MaterialeDidattico getMaterialeById(@PathVariable Long id) {
-        return materialeDidatticoService.getMaterialeDidatticoById(id);
+    public MaterialeDidattico getById(@PathVariable Long id) {
+        return service.getMaterialeById(id);
     }
 
-    @GetMapping("/lezione/{lezioneId}")
-    public List<MaterialeDidattico> getMaterialiByLezione(@PathVariable Long lezioneId) {
-        return materialeDidatticoService.getMaterialiByLezioneId(lezioneId);
+    @PostMapping
+    public MaterialeDidattico create(@RequestBody MaterialeDidattico materiale) {
+        return service.createMateriale(materiale);
     }
 
-    @GetMapping("/tipo/{tipoMateriale}")
-    public List<MaterialeDidattico> getMaterialiByTipo(@PathVariable String tipoMateriale) {
-        return materialeDidatticoService.getMaterialiByTipo(tipoMateriale);
-    }
-
-    @GetMapping("/corso/{corsoId}")
-    public List<MaterialeDidattico> getAllMaterialiByCorso(@PathVariable Long corsoId) {
-        return materialeDidatticoService.getAllMaterialiByCorsoId(corsoId);
-    }
-
-    @GetMapping("/recenti")
-    public List<MaterialeDidattico> getRecentMateriali(@RequestParam LocalDate data) {
-        return materialeDidatticoService.getRecentMateriali(data);
+    @PutMapping("/{id}")
+    public MaterialeDidattico update(@PathVariable Long id, @RequestBody MaterialeDidattico materiale) {
+        return service.updateMateriale(id, materiale);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteMateriale(@PathVariable Long id) {
-        materialeDidatticoService.deleteMaterialeDidattico(id);
+    public void delete(@PathVariable Long id) {
+        service.deleteMateriale(id);
     }
 
-    @GetMapping("/{id}/exists")
-    public boolean existsById(@PathVariable Long id) {
-        return materialeDidatticoService.existsById(id);
+    @PostMapping("/corso")
+    public List<MaterialeDidattico> getByCorso(@RequestBody Corso corso) {
+        return service.getByCorso(corso);
+    }
+
+    @GetMapping("/titolo")
+    public List<MaterialeDidattico> getByTitolo(@RequestParam String titolo) {
+        return service.getByTitolo(titolo);
+    }
+
+    @GetMapping("/tipo")
+    public List<MaterialeDidattico> getByTipo(@RequestParam String tipo) {
+        return service.getByTipo(tipo);
     }
 }

@@ -1,56 +1,117 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "docenti")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "docente")
 public class Docente {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @NotBlank(message = "Il nome è obbligatorio")
+    @Column(name = "id_docente")
+    private Long idDocente;
+
+    @Column(name = "nome", nullable = false)
     private String nome;
-    
-    @NotBlank(message = "Il cognome è obbligatorio")
+
+    @Column(name = "cognome", nullable = false)
     private String cognome;
-    
-    @Email(message = "Formato email non valido")
-    @NotBlank(message = "L'email è obbligatoria")
-    @Column(unique = true)
+
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
-    
+
+    @Column(name = "telefono")
     private String telefono;
-    
+
+    @Column(name = "specializzazione")
     private String specializzazione;
-    
-    @PositiveOrZero(message = "La tariffa oraria non può essere negativa")
-    private Float tariffaOraria;
-    
-    private String cv;
-    
-    @Column(name = "data_assunzione")
-    private LocalDate dataAssunzione;
-    
-    // Relazioni
-    @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL)
-    private Set<Corso> corsi = new HashSet<>();
-    
-    @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL)
-    private Set<Lezione> lezioni = new HashSet<>();
-    
-    @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL)
-    private Set<Valutazione> valutazioni = new HashSet<>();
+
+    @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Corso> corsi = new ArrayList<>();
+
+    // Costruttori
+    public Docente() {}
+
+    public Docente(String nome, String cognome, String email, String telefono, String specializzazione) {
+        this.nome = nome;
+        this.cognome = cognome;
+        this.email = email;
+        this.telefono = telefono;
+        this.specializzazione = specializzazione;
+    }
+
+    // Getter e Setter
+    public Long getIdDocente() {
+        return idDocente;
+    }
+
+    public void setIdDocente(Long idDocente) {
+        this.idDocente = idDocente;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getCognome() {
+        return cognome;
+    }
+
+    public void setCognome(String cognome) {
+        this.cognome = cognome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getSpecializzazione() {
+        return specializzazione;
+    }
+
+    public void setSpecializzazione(String specializzazione) {
+        this.specializzazione = specializzazione;
+    }
+
+    public List<Corso> getCorsi() {
+        return corsi;
+    }
+
+    public void setCorsi(List<Corso> corsi) {
+        this.corsi = corsi;
+    }
+
+    public void addCorso(Corso corso) {
+        corsi.add(corso);
+        corso.setDocente(this);
+    }
+
+    public void removeCorso(Corso corso) {
+        corsi.remove(corso);
+        corso.setDocente(null);
+    }
+
+    @Override
+    public String toString() {
+        return nome + " " + cognome;
+    }
 }

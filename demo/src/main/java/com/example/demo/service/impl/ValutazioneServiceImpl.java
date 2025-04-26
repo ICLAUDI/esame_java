@@ -1,62 +1,84 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.Valutazione;
+import com.example.demo.model.Iscrizione;
+import com.example.demo.model.Docente;
 import com.example.demo.repository.ValutazioneRepository;
 import com.example.demo.service.ValutazioneService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ValutazioneServiceImpl implements ValutazioneService {
 
-    private final ValutazioneRepository valutazioneRepository;
-
-    public ValutazioneServiceImpl(ValutazioneRepository valutazioneRepository) {
-        this.valutazioneRepository = valutazioneRepository;
-    }
+    @Autowired
+    private ValutazioneRepository valutazioneRepository;
 
     @Override
-    public Valutazione saveValutazione(Valutazione valutazione) {
+    public Valutazione createValutazione(Valutazione valutazione) {
         return valutazioneRepository.save(valutazione);
     }
 
     @Override
-    public Valutazione getValutazioneById(Long id) {
-        return valutazioneRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Valutazione non trovata con id: " + id));
+    public List<Valutazione> getAllValutazioni() {
+        return valutazioneRepository.findAll();
     }
 
     @Override
-    public List<Valutazione> getValutazioniByStudenteId(Long studenteId) {
-        return valutazioneRepository.findByStudenteId(studenteId);
+    public Optional<Valutazione> getValutazioneById(Long id) {
+        return valutazioneRepository.findById(id);
     }
 
     @Override
-    public List<Valutazione> getValutazioniByCorsoId(Long corsoId) {
-        return valutazioneRepository.findByCorsoIdOrderByDataValutazioneDesc(corsoId);
+    public List<Valutazione> getValutazioniByIscrizione(Iscrizione iscrizione) {
+        return valutazioneRepository.findByIscrizione(iscrizione);
+    }
+
+    @Override
+    public List<Valutazione> getValutazioniByDocente(Docente docente) {
+        return valutazioneRepository.findByDocente(docente);
+    }
+
+    @Override
+    public List<Valutazione> getValutazioniByVotoRange(Integer minVoto, Integer maxVoto) {
+        return valutazioneRepository.findByVotoBetween(minVoto, maxVoto);
+    }
+
+    @Override
+    public List<Valutazione> getValutazioniByDataValutazione(Date startDate, Date endDate) {
+        return valutazioneRepository.findByDataValutazioneBetween(startDate, endDate);
+    }
+
+    @Override
+    public List<Valutazione> getValutazioniByTipoValutazione(String tipoValutazione) {
+        return valutazioneRepository.findByTipoValutazione(tipoValutazione);
+    }
+
+    @Override
+    public Double getAverageVotoByIscrizioneId(Long iscrizioneId) {
+        return valutazioneRepository.avgVotoByIscrizioneId(iscrizioneId);
     }
 
     @Override
     public Double getAverageVotoByCorsoId(Long corsoId) {
-        return valutazioneRepository.calculateAverageVotoByCorsoId(corsoId);
+        return valutazioneRepository.avgVotoByCorsoId(corsoId);
     }
 
     @Override
-    public List<Valutazione> getValutazioniWithHighVoto(Double votoMinimo) {
-        return valutazioneRepository.findValutazioniWithHighVoto(votoMinimo);
+    public Valutazione updateValutazione(Long id, Valutazione valutazione) {
+        if (valutazioneRepository.existsById(id)) {
+            valutazione.setIdValutazione(id);
+            return valutazioneRepository.save(valutazione);
+        }
+        return null;
     }
 
     @Override
     public void deleteValutazione(Long id) {
-        if (!valutazioneRepository.existsById(id)) {
-            throw new RuntimeException("Valutazione non trovata con id: " + id);
-        }
         valutazioneRepository.deleteById(id);
-    }
-
-    @Override
-    public boolean existsById(Long id) {
-        return valutazioneRepository.existsById(id);
     }
 }

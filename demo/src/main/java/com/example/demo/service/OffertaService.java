@@ -6,12 +6,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface OffertaService {
-    Offerta saveOfferta(Offerta offerta);
+    List<Offerta> getAllOfferte();
     Offerta getOffertaById(Long id);
-    List<Offerta> getOfferteByTipo(String tipoOfferta);
-    List<Offerta> getOfferteWithMoreThan50PercentDiscount();
-    List<Offerta> getActiveOfferteByCorsoId(Long corsoId);
-    List<Offerta> getOfferteByScadenzaAfter(LocalDate today);
+    Offerta createOfferta(Offerta offerta);
+    Offerta updateOfferta(Long id, Offerta offerta);
     void deleteOfferta(Long id);
-    boolean existsById(Long id);
+
+    List<Offerta> getOfferteAttive(LocalDate data);
+    List<Offerta> getOfferteByTipo(String tipoOfferta);
+    List<Offerta> getOfferteConScontoMaggioreDel50();
+    List<Offerta> getOfferteAttivePerPartner(Long partnerId);
 }

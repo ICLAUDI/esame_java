@@ -1,69 +1,73 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Categoria;
 import com.example.demo.model.Corso;
 import com.example.demo.service.CorsoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/corsi")
 public class CorsoController {
 
-    private final CorsoService corsoService;
-
-    public CorsoController(CorsoService corsoService) {
-        this.corsoService = corsoService;
-    }
-
-    @PostMapping
-    public Corso createCorso(@RequestBody Corso corso) {
-        return corsoService.saveCorso(corso);
-    }
-
-    @GetMapping("/{id}")
-    public Corso getCorsoById(@PathVariable Long id) {
-        return corsoService.getCorsoById(id);
-    }
+    @Autowired
+    private CorsoService corsoService;
 
     @GetMapping
-    public List<Corso> getAllCorsi() {
+    public List<Corso> getAll() {
         return corsoService.getAllCorsi();
     }
 
-    @GetMapping("/categoria/{categoriaId}")
-    public List<Corso> getCorsiByCategoria(@PathVariable Long categoriaId) {
-        Categoria categoria = new Categoria();
-        categoria.setId(categoriaId);
-        return corsoService.getCorsiByCategoria(categoria);
+    @GetMapping("/{id}")
+    public Optional<Corso> getById(@PathVariable Long id) {
+        return corsoService.getCorsoById(id);
     }
 
-    @GetMapping("/periodo")
-    public List<Corso> getCorsiByPeriodo(
-            @RequestParam LocalDate dataInizio,
-            @RequestParam LocalDate dataFine) {
-        return corsoService.getCorsiByPeriodo(dataInizio, dataFine);
+    @PostMapping
+    public Corso create(@RequestBody Corso corso) {
+        return corsoService.createCorso(corso);
     }
 
-    @GetMapping("/recenti")
-    public List<Corso> getCorsiRecenti() {
-        return corsoService.getCorsiRecenti();
-    }
-
-    @GetMapping("/piu-iscrizioni")
-    public List<Corso> getCorsiWithMoreThanXIscrizioni(@RequestParam int numeroMinimo) {
-        return corsoService.getCorsiWithMoreThanXIscrizioni(numeroMinimo);
+    @PutMapping("/{id}")
+    public Corso update(@PathVariable Long id, @RequestBody Corso corso) {
+        return corsoService.updateCorso(id, corso);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCorso(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) {
         corsoService.deleteCorso(id);
     }
 
-    @GetMapping("/{id}/exists")
-    public boolean existsById(@PathVariable Long id) {
-        return corsoService.existsById(id);
+    @GetMapping("/search/titolo")
+    public List<Corso> searchByTitolo(@RequestParam String titolo) {
+        return corsoService.searchByTitolo(titolo);
+    }
+
+    @GetMapping("/search/futuri")
+    public List<Corso> getCorsiFuturi() {
+        return corsoService.getCorsiFuturi();
+    }
+
+    @GetMapping("/search/attuali")
+    public List<Corso> getCorsiAttuali() {
+        return corsoService.getCorsiAttuali();
+    }
+
+    @GetMapping("/search/date-inizio")
+    public List<Corso> getByDataInizioBetween(@RequestParam Date start, @RequestParam Date end) {
+        return corsoService.getByDataInizioBetween(start, end);
+    }
+
+    @GetMapping("/search/date-fine")
+    public List<Corso> getByDataFineBetween(@RequestParam Date start, @RequestParam Date end) {
+        return corsoService.getByDataFineBetween(start, end);
+    }
+
+    @GetMapping("/search/posti")
+    public List<Corso> getByPostiDisponibiliGreaterThan(@RequestParam Integer minPosti) {
+        return corsoService.getByPostiDisponibiliGreaterThan(minPosti);
     }
 }

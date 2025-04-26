@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Offerta;
 import com.example.demo.service.OffertaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -11,49 +12,51 @@ import java.util.List;
 @RequestMapping("/api/offerte")
 public class OffertaController {
 
-    private final OffertaService offertaService;
+    @Autowired
+    private OffertaService service;
 
-    public OffertaController(OffertaService offertaService) {
-        this.offertaService = offertaService;
-    }
-
-    @PostMapping
-    public Offerta createOfferta(@RequestBody Offerta offerta) {
-        return offertaService.saveOfferta(offerta);
+    @GetMapping
+    public List<Offerta> getAll() {
+        return service.getAllOfferte();
     }
 
     @GetMapping("/{id}")
-    public Offerta getOffertaById(@PathVariable Long id) {
-        return offertaService.getOffertaById(id);
+    public Offerta getById(@PathVariable Long id) {
+        return service.getOffertaById(id);
     }
 
-    @GetMapping("/tipo/{tipoOfferta}")
-    public List<Offerta> getOfferteByTipo(@PathVariable String tipoOfferta) {
-        return offertaService.getOfferteByTipo(tipoOfferta);
+    @PostMapping
+    public Offerta create(@RequestBody Offerta offerta) {
+        return service.createOfferta(offerta);
     }
 
-    @GetMapping("/scadenza")
-    public List<Offerta> getOfferteByScadenza(@RequestParam LocalDate today) {
-        return offertaService.getOfferteByScadenzaAfter(today);
-    }
-
-    @GetMapping("/sconto")
-    public List<Offerta> getOfferteWithMoreThan50PercentDiscount() {
-        return offertaService.getOfferteWithMoreThan50PercentDiscount();
-    }
-
-    @GetMapping("/corso/{corsoId}")
-    public List<Offerta> getActiveOfferteByCorsoId(@PathVariable Long corsoId) {
-        return offertaService.getActiveOfferteByCorsoId(corsoId);
+    @PutMapping("/{id}")
+    public Offerta update(@PathVariable Long id, @RequestBody Offerta offerta) {
+        return service.updateOfferta(id, offerta);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteOfferta(@PathVariable Long id) {
-        offertaService.deleteOfferta(id);
+    public void delete(@PathVariable Long id) {
+        service.deleteOfferta(id);
     }
 
-    @GetMapping("/{id}/exists")
-    public boolean existsById(@PathVariable Long id) {
-        return offertaService.existsById(id);
+    @GetMapping("/attive")
+    public List<Offerta> getAttive(@RequestParam(name = "data") String data) {
+        return service.getOfferteAttive(LocalDate.parse(data));
+    }
+
+    @GetMapping("/tipo")
+    public List<Offerta> getByTipo(@RequestParam String tipo) {
+        return service.getOfferteByTipo(tipo);
+    }
+
+    @GetMapping("/super-sconto")
+    public List<Offerta> getOfferteScontate() {
+        return service.getOfferteConScontoMaggioreDel50();
+    }
+
+    @GetMapping("/partner/{partnerId}")
+    public List<Offerta> getByPartner(@PathVariable Long partnerId) {
+        return service.getOfferteAttivePerPartner(partnerId);
     }
 }

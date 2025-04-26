@@ -1,63 +1,58 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.MaterialeDidattico;
+import com.example.demo.model.Corso;
 import com.example.demo.repository.MaterialeDidatticoRepository;
 import com.example.demo.service.MaterialeDidatticoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class MaterialeDidatticoServiceImpl implements MaterialeDidatticoService {
 
-    private final MaterialeDidatticoRepository materialeDidatticoRepository;
+    @Autowired
+    private MaterialeDidatticoRepository repository;
 
-    public MaterialeDidatticoServiceImpl(MaterialeDidatticoRepository materialeDidatticoRepository) {
-        this.materialeDidatticoRepository = materialeDidatticoRepository;
+    @Override
+    public List<MaterialeDidattico> getAllMateriali() {
+        return repository.findAll();
     }
 
     @Override
-    public MaterialeDidattico saveMaterialeDidattico(MaterialeDidattico materialeDidattico) {
-        return materialeDidatticoRepository.save(materialeDidattico);
+    public MaterialeDidattico getMaterialeById(Long id) {
+        return repository.findById(id).orElse(null);
     }
 
     @Override
-    public MaterialeDidattico getMaterialeDidatticoById(Long id) {
-        return materialeDidatticoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Materiale didattico non trovato con id: " + id));
+    public MaterialeDidattico createMateriale(MaterialeDidattico materiale) {
+        return repository.save(materiale);
     }
 
     @Override
-    public List<MaterialeDidattico> getMaterialiByLezioneId(Long lezioneId) {
-        return materialeDidatticoRepository.findByLezioneId(lezioneId);
+    public MaterialeDidattico updateMateriale(Long id, MaterialeDidattico materiale) {
+        materiale.setIdMateriale(id);
+        return repository.save(materiale);
     }
 
     @Override
-    public List<MaterialeDidattico> getMaterialiByTipo(String tipoMateriale) {
-        return materialeDidatticoRepository.findByTipoMateriale(tipoMateriale);
+    public void deleteMateriale(Long id) {
+        repository.deleteById(id);
     }
 
     @Override
-    public List<MaterialeDidattico> getAllMaterialiByCorsoId(Long corsoId) {
-        return materialeDidatticoRepository.findAllMaterialiByCorsoId(corsoId);
+    public List<MaterialeDidattico> getByCorso(Corso corso) {
+        return repository.findByCorso(corso);
     }
 
     @Override
-    public List<MaterialeDidattico> getRecentMateriali(LocalDate data) {
-        return materialeDidatticoRepository.findRecentMateriali(data);
+    public List<MaterialeDidattico> getByTitolo(String titolo) {
+        return repository.findByTitoloContainingIgnoreCase(titolo);
     }
 
     @Override
-    public void deleteMaterialeDidattico(Long id) {
-        if (!materialeDidatticoRepository.existsById(id)) {
-            throw new RuntimeException("Materiale didattico non trovato con id: " + id);
-        }
-        materialeDidatticoRepository.deleteById(id);
-    }
-
-    @Override
-    public boolean existsById(Long id) {
-        return materialeDidatticoRepository.existsById(id);
+    public List<MaterialeDidattico> getByTipo(String tipo) {
+        return repository.findByTipo(tipo);
     }
 }

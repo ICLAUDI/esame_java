@@ -20,7 +20,7 @@ public class Offerta {
     
     @ManyToOne
     @JoinColumn(name = "id_partner", nullable = false)
-    private PartnerAziendale partner;
+    private Partner partner; 
     
     @Column(columnDefinition = "TEXT")
     private String descrizione;
@@ -33,4 +33,13 @@ public class Offerta {
     
     @Column(name = "data_scadenza")
     private LocalDate dataScadenza;
+    
+    @Column(name = "tipo_offerta")
+    private String tipoOfferta;  
+    
+    @Column(name = "prezzo_originale")
+    private Double prezzoOriginale;
+    
+    @Column(name = "prezzo_scontato")
+    private Double prezzoScontato;
 }
