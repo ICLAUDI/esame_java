@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CorsoServiceImpl implements CorsoService {
@@ -24,8 +23,9 @@ public class CorsoServiceImpl implements CorsoService {
     }
 
     @Override
-    public Optional<Corso> getCorsoById(Long id) {
-        return corsoRepository.findById(id);
+    public Corso getCorsoById(Long id) {
+        return corsoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Corso non trovato con ID: " + id));
     }
 
     @Override

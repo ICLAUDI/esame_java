@@ -1,9 +1,14 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Lezione;
+import com.example.demo.Dto.LezioneDTO;
+import com.example.demo.Mapper.LezioneMapper;
+import com.example.demo.model.Aula;
 import com.example.demo.model.Corso;
 import com.example.demo.model.Docente;
-import com.example.demo.model.Aula;
+import com.example.demo.model.Lezione;
+import com.example.demo.repository.AulaRepository;
+import com.example.demo.repository.CorsoRepository;
+import com.example.demo.repository.DocenteRepository;
 import com.example.demo.service.LezioneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,24 +23,43 @@ public class LezioneController {
     @Autowired
     private LezioneService lezioneService;
 
+    @Autowired
+    private CorsoRepository corsoRepository;
+
+    @Autowired
+    private DocenteRepository docenteRepository;
+
+    @Autowired
+    private AulaRepository aulaRepository;
+
     @GetMapping
-    public List<Lezione> getAll() {
-        return lezioneService.getAllLezioni();
+    public List<LezioneDTO> getAll() {
+        return lezioneService.getAllLezioni().stream()
+                .map(LezioneMapper::toDTO)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public Lezione getById(@PathVariable Long id) {
-        return lezioneService.getLezioneById(id);
+    public LezioneDTO getById(@PathVariable Long id) {
+        return LezioneMapper.toDTO(lezioneService.getLezioneById(id));
     }
 
     @PostMapping
-    public Lezione create(@RequestBody Lezione lezione) {
-        return lezioneService.createLezione(lezione);
+    public LezioneDTO create(@RequestBody LezioneDTO dto) {
+        Corso corso = corsoRepository.findById(dto.getIdCorso()).orElseThrow();
+        Docente docente = docenteRepository.findById(dto.getIdDocente()).orElseThrow();
+        Aula aula = aulaRepository.findById(dto.getIdAula()).orElseThrow();
+        Lezione lezione = LezioneMapper.toEntity(dto, corso, docente, aula);
+        return LezioneMapper.toDTO(lezioneService.createLezione(lezione));
     }
 
     @PutMapping("/{id}")
-    public Lezione update(@PathVariable Long id, @RequestBody Lezione lezione) {
-        return lezioneService.updateLezione(id, lezione);
+    public LezioneDTO update(@PathVariable Long id, @RequestBody LezioneDTO dto) {
+        Corso corso = corsoRepository.findById(dto.getIdCorso()).orElseThrow();
+        Docente docente = docenteRepository.findById(dto.getIdDocente()).orElseThrow();
+        Aula aula = aulaRepository.findById(dto.getIdAula()).orElseThrow();
+        Lezione lezione = LezioneMapper.toEntity(dto, corso, docente, aula);
+        return LezioneMapper.toDTO(lezioneService.updateLezione(id, lezione));
     }
 
     @DeleteMapping("/{id}")
@@ -43,45 +67,62 @@ public class LezioneController {
         lezioneService.deleteLezione(id);
     }
 
-    @PostMapping("/corso")
-    public List<Lezione> getByCorso(@RequestBody Corso corso) {
-        return lezioneService.getByCorso(corso);
-    }
-
-    @PostMapping("/docente")
-    public List<Lezione> getByDocente(@RequestBody Docente docente) {
-        return lezioneService.getByDocente(docente);
-    }
-
-    @PostMapping("/aula")
-    public List<Lezione> getByAula(@RequestBody Aula aula) {
-        return lezioneService.getByAula(aula);
-    }
-
     @GetMapping("/data")
-    public List<Lezione> getByData(@RequestParam Date data) {
-        return lezioneService.getByData(data);
+    public List<LezioneDTO> getByData(@RequestParam Date data) {
+        return lezioneService.getByData(data).stream()
+                .map(LezioneMapper::toDTO)
+                .toList();
     }
 
     @GetMapping("/data-range")
-    public List<Lezione> getByDateRange(@RequestParam Date start, @RequestParam Date end) {
-        return lezioneService.getByDataBetween(start, end);
+    public List<LezioneDTO> getByDateRange(@RequestParam Date start, @RequestParam Date end) {
+        return lezioneService.getByDataBetween(start, end).stream()
+                .map(LezioneMapper::toDTO)
+                .toList();
     }
 
     @GetMapping("/argomento")
-    public List<Lezione> getByArgomento(@RequestParam String argomento) {
-        return lezioneService.getByArgomento(argomento);
+    public List<LezioneDTO> getByArgomento(@RequestParam String argomento) {
+        return lezioneService.getByArgomento(argomento).stream()
+                .map(LezioneMapper::toDTO)
+                .toList();
     }
 
-    @PostMapping("/check-overlap")
-    public List<Lezione> checkTimeOverlap(
+    @GetMapping("/corso")
+    public List<LezioneDTO> getByCorso(@RequestParam Long corsoId) {
+        Corso corso = corsoRepository.findById(corsoId).orElseThrow();
+        return lezioneService.getByCorso(corso).stream()
+                .map(LezioneMapper::toDTO)
+                .toList();
+    }
+
+    @GetMapping("/docente")
+    public List<LezioneDTO> getByDocente(@RequestParam Long docenteId) {
+        Docente docente = docenteRepository.findById(docenteId).orElseThrow();
+        return lezioneService.getByDocente(docente).stream()
+                .map(LezioneMapper::toDTO)
+                .toList();
+    }
+
+    @GetMapping("/aula")
+    public List<LezioneDTO> getByAula(@RequestParam Long aulaId) {
+        Aula aula = aulaRepository.findById(aulaId).orElseThrow();
+        return lezioneService.getByAula(aula).stream()
+                .map(LezioneMapper::toDTO)
+                .toList();
+    }
+
+    @GetMapping("/check-overlap")
+    public List<LezioneDTO> checkTimeOverlap(
             @RequestParam Long aulaId,
             @RequestParam Date data,
             @RequestParam String oraInizio,
             @RequestParam String oraFine
     ) {
-        Aula aula = new Aula();
-        aula.setIdAula(aulaId);
-        return lezioneService.getByAulaAndDataAndTimeOverlap(aula, data, oraFine, oraInizio);
+        Aula aula = aulaRepository.findById(aulaId).orElseThrow();
+        return lezioneService.getByAulaAndDataAndTimeOverlap(aula, data, oraFine, oraInizio)
+                .stream()
+                .map(LezioneMapper::toDTO)
+                .toList();
     }
 }

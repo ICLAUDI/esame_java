@@ -6,11 +6,10 @@ import com.example.demo.model.Docente;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 public interface CorsoService {
     List<Corso> getAllCorsi();
-    Optional<Corso> getCorsoById(Long id);
+    Corso getCorsoById(Long id); // 🔄 RESTITUISCE DIRETTAMENTE CORSO
     Corso createCorso(Corso corso);
     Corso updateCorso(Long id, Corso corso);
     void deleteCorso(Long id);

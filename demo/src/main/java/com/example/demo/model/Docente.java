@@ -1,6 +1,5 @@
 package com.example.demo.model;
 
-
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +22,17 @@ public class Docente {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Column(name = "password", nullable = false)
+    private String password;
+
     @Column(name = "telefono")
     private String telefono;
 
     @Column(name = "specializzazione")
     private String specializzazione;
+
+    @Column(name = "ruolo", nullable = false)
+    private String ruolo;
 
     @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Corso> corsi = new ArrayList<>();
@@ -35,12 +40,14 @@ public class Docente {
     // Costruttori
     public Docente() {}
 
-    public Docente(String nome, String cognome, String email, String telefono, String specializzazione) {
+    public Docente(String nome, String cognome, String email, String password, String telefono, String specializzazione, String ruolo) {
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
+        this.password = password;
         this.telefono = telefono;
         this.specializzazione = specializzazione;
+        this.ruolo = ruolo;
     }
 
     // Getter e Setter
@@ -76,6 +83,14 @@ public class Docente {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getTelefono() {
         return telefono;
     }
@@ -90,6 +105,14 @@ public class Docente {
 
     public void setSpecializzazione(String specializzazione) {
         this.specializzazione = specializzazione;
+    }
+
+    public String getRuolo() {
+        return ruolo;
+    }
+
+    public void setRuolo(String ruolo) {
+        this.ruolo = ruolo;
     }
 
     public List<Corso> getCorsi() {

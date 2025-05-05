@@ -60,4 +60,9 @@ public class DocenteServiceImpl implements DocenteService {
     public Optional<Docente> getByEmail(String email) {
         return docenteRepository.findByEmail(email);
     }
+
+    @Override
+    public List<Docente> searchByRuolo(String ruolo) {
+        return docenteRepository.findByRuolo(ruolo);  // Implementata la ricerca per ruolo
+    }
 }

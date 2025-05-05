@@ -1,8 +1,12 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Iscrizione;
+import com.example.demo.Dto.IscrizioneDTO;
+import com.example.demo.Mapper.IscrizioneMapper;
 import com.example.demo.model.Corso;
+import com.example.demo.model.Iscrizione;
 import com.example.demo.model.Studente;
+import com.example.demo.repository.CorsoRepository;
+import com.example.demo.repository.StudenteRepository;
 import com.example.demo.service.IscrizioneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,24 +21,38 @@ public class IscrizioneController {
     @Autowired
     private IscrizioneService iscrizioneService;
 
+    @Autowired
+    private StudenteRepository studenteRepository;
+
+    @Autowired
+    private CorsoRepository corsoRepository;
+
     @GetMapping
-    public List<Iscrizione> getAll() {
-        return iscrizioneService.getAllIscrizioni();
+    public List<IscrizioneDTO> getAll() {
+        return iscrizioneService.getAllIscrizioni().stream()
+                .map(IscrizioneMapper::toDTO)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public Iscrizione getById(@PathVariable Long id) {
-        return iscrizioneService.getIscrizioneById(id);
+    public IscrizioneDTO getById(@PathVariable Long id) {
+        return IscrizioneMapper.toDTO(iscrizioneService.getIscrizioneById(id));
     }
 
     @PostMapping
-    public Iscrizione create(@RequestBody Iscrizione iscrizione) {
-        return iscrizioneService.createIscrizione(iscrizione);
+    public IscrizioneDTO create(@RequestBody IscrizioneDTO dto) {
+        Studente studente = studenteRepository.findById(dto.getIdStudente()).orElseThrow();
+        Corso corso = corsoRepository.findById(dto.getIdCorso()).orElseThrow();
+        Iscrizione iscrizione = IscrizioneMapper.toEntity(dto, studente, corso);
+        return IscrizioneMapper.toDTO(iscrizioneService.createIscrizione(iscrizione));
     }
 
     @PutMapping("/{id}")
-    public Iscrizione update(@PathVariable Long id, @RequestBody Iscrizione iscrizione) {
-        return iscrizioneService.updateIscrizione(id, iscrizione);
+    public IscrizioneDTO update(@PathVariable Long id, @RequestBody IscrizioneDTO dto) {
+        Studente studente = studenteRepository.findById(dto.getIdStudente()).orElseThrow();
+        Corso corso = corsoRepository.findById(dto.getIdCorso()).orElseThrow();
+        Iscrizione iscrizione = IscrizioneMapper.toEntity(dto, studente, corso);
+        return IscrizioneMapper.toDTO(iscrizioneService.updateIscrizione(id, iscrizione));
     }
 
     @DeleteMapping("/{id}")
@@ -42,29 +60,25 @@ public class IscrizioneController {
         iscrizioneService.deleteIscrizione(id);
     }
 
-    @PostMapping("/studente")
-    public List<Iscrizione> getByStudente(@RequestBody Studente studente) {
-        return iscrizioneService.getByStudente(studente);
-    }
-
-    @PostMapping("/corso")
-    public List<Iscrizione> getByCorso(@RequestBody Corso corso) {
-        return iscrizioneService.getByCorso(corso);
-    }
-
-    @GetMapping("/date")
-    public List<Iscrizione> getByDateRange(@RequestParam Date start, @RequestParam Date end) {
-        return iscrizioneService.getByDateRange(start, end);
-    }
-
     @GetMapping("/stato")
-    public List<Iscrizione> getByStato(@RequestParam String stato) {
-        return iscrizioneService.getByStato(stato);
+    public List<IscrizioneDTO> getByStato(@RequestParam String stato) {
+        return iscrizioneService.getByStato(stato).stream()
+                .map(IscrizioneMapper::toDTO)
+                .toList();
     }
 
     @GetMapping("/completato")
-    public List<Iscrizione> getByCompletato(@RequestParam Boolean completato) {
-        return iscrizioneService.getByCompletato(completato);
+    public List<IscrizioneDTO> getByCompletato(@RequestParam Boolean completato) {
+        return iscrizioneService.getByCompletato(completato).stream()
+                .map(IscrizioneMapper::toDTO)
+                .toList();
+    }
+
+    @GetMapping("/date")
+    public List<IscrizioneDTO> getByDateRange(@RequestParam Date start, @RequestParam Date end) {
+        return iscrizioneService.getByDateRange(start, end).stream()
+                .map(IscrizioneMapper::toDTO)
+                .toList();
     }
 
     @GetMapping("/conta/{corsoId}")
@@ -72,8 +86,12 @@ public class IscrizioneController {
         return iscrizioneService.countByCorsoId(corsoId);
     }
 
-    @PostMapping("/studente-corso")
-    public List<Iscrizione> getByStudenteAndCorso(@RequestBody Studente studente, @RequestBody Corso corso) {
-        return iscrizioneService.getByStudenteAndCorso(studente, corso);
+    @GetMapping("/studente-corso")
+    public List<IscrizioneDTO> getByStudenteAndCorso(@RequestParam Long idStudente, @RequestParam Long idCorso) {
+        Studente studente = studenteRepository.findById(idStudente).orElseThrow();
+        Corso corso = corsoRepository.findById(idCorso).orElseThrow();
+        return iscrizioneService.getByStudenteAndCorso(studente, corso).stream()
+                .map(IscrizioneMapper::toDTO)
+                .toList();
     }
 }

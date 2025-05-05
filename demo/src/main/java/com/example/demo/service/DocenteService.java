@@ -15,4 +15,5 @@ public interface DocenteService {
     List<Docente> searchByCognome(String cognome);
     List<Docente> searchBySpecializzazione(String specializzazione);
     Optional<Docente> getByEmail(String email);
+    List<Docente> searchByRuolo(String ruolo); // Aggiunta ricerca per ruolo
 }
